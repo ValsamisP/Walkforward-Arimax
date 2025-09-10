@@ -37,7 +37,12 @@ The project is designed with reusable modules for:
 - **Machine Learning for Finance**
 - **Risk-adjusted Performance Metrics**
 
-Developed by **Panagiotis Valsamis** , M.Sc in Data Science canditate and aspiring Data Scientist.
+## Author
+Developed by **Panagiotis Valsamis**, M.Sc. in Data Science candidate and aspiring Data Scientist.
+
+## Contributor
+**Panagiotis Akidis**, Master in Finance & Economics providing valuable theoretical insights in finance.
+
 
   
 
