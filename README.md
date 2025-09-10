@@ -17,7 +17,7 @@ The project is designed with reusable modules for:
 - feature_engineering.py -> Constructing different features such as volatility, lags etc
 - model_arimax.py -> Model training
 - evaluation_visualization.py -> Performance Evaluation
-- main.ipynb -> End to End workflow
+- results.ipynb -> End to End workflow/Final Results
 
   ## Key Features
 
