@@ -266,80 +266,72 @@ def plot_rolling_performance_metrics(per_point: pd.DataFrame, window: int = 60, 
     plt.show()
 
 
-def enhanced_plot_cum_pnl(per_point: pd.DataFrame, market_ret_series: pd.Series = None, title: str = "Enhanced Strategy Performance"):
-    """
-    Two panel layout:
-    - Top : Cummulative returns comparing Strategy vs Buy and Hold vs Market
-    - Bottom : Daily returns bar chart
-
-    Key Comparison:
-    1. Strategy : Following model signals (can be long or short)
-    2. Buy & Hold : Simple buying and holding the asset
-    3. Market : Benchmark performance (NASDAQ)
-
-    The performance metrics box shows:
-    - Total returns over the period
-    - Strategy volatility 
-    - Sharpe Ratio
-
-
-    """
+def enhanced_plot_cum_pnl(
+    per_point: pd.DataFrame,
+    market_ret_series: pd.Series | None = None,
+    title: str = "Enhanced Strategy Performance",
+    include_buy_hold: bool = False,   
+):
+    
     df = per_point[["y_true","y_pred"]].dropna().copy()
     df["signal"] = np.sign(df["y_pred"]).replace(0, 0)
     df["strategy_ret"] = df["signal"] * df["y_true"]
-    
-    # Calculate cumulative returns
+
+    # Cumulative returns
     cum_strategy = (1 + df["strategy_ret"]).cumprod()
-    cum_bh = (1 + df["y_true"]).cumprod()
-    
-    # If market returns provided, calculate market cumulative return
+    cum_bh = (1 + df["y_true"]).cumprod() if include_buy_hold else None
+
+    cum_market = None
     if market_ret_series is not None:
         market_aligned = market_ret_series.reindex(df.index).fillna(0)
         cum_market = (1 + market_aligned).cumprod()
-    
+
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
-    
-    # Top plot: Cumulative returns
-    cum_strategy.plot(ax=ax1, label="Strategy", linewidth=2, color='blue')
-    cum_bh.plot(ax=ax1, label="Buy & Hold", linewidth=2, color='orange')
-    if market_ret_series is not None:
-        cum_market.plot(ax=ax1, label="Market (QQQ)", linewidth=2, color='green')
-    
-    ax1.set_title(title, fontsize=14, fontweight='bold')
-    ax1.set_ylabel('Cumulative Return')
+
+    # Top: cumulative curves
+    cum_strategy.plot(ax=ax1, label="Strategy", linewidth=2, color="blue")
+    if include_buy_hold:
+        cum_bh.plot(ax=ax1, label="Buy & Hold", linewidth=2, color="orange")
+    if cum_market is not None:
+        cum_market.plot(ax=ax1, label="Market (QQQ)", linewidth=2, color="green")
+
+    ax1.set_title(title, fontsize=14, fontweight="bold")
+    ax1.set_ylabel("Cumulative Return")
     ax1.legend()
     ax1.grid(True, alpha=0.3)
-    
-    # Bottom plot: Daily returns (sample to avoid overcrowding)
-    sample_df = df.iloc[::max(1, len(df)//100)]  # Sample max 100 points
-    sample_df["strategy_ret"].plot(ax=ax2, kind='bar', alpha=0.6, color='lightblue', width=0.8)
-    ax2.axhline(y=0, color='black', linestyle='-', alpha=0.3)
-    ax2.set_title('Daily Strategy Returns (sampled)', fontweight='bold')
-    ax2.set_ylabel('Daily Return')
+
+    # Bottom: sampled daily strategy returns
+    sample_df = df.iloc[::max(1, len(df)//100)]
+    sample_df["strategy_ret"].plot(ax=ax2, kind="bar", alpha=0.6, color="lightblue", width=0.8)
+    ax2.axhline(y=0, color="black", linestyle="-", alpha=0.3)
+    ax2.set_title("Daily Strategy Returns (sampled)", fontweight="bold")
+    ax2.set_ylabel("Daily Return")
     ax2.grid(True, alpha=0.3)
-    
-    # Calculate and display performance metrics
-    if len(cum_strategy) > 0 and len(cum_bh) > 0:
+
+    # Metrics box
+    if len(cum_strategy):
         strategy_total_ret = cum_strategy.iloc[-1] - 1
-        bh_total_ret = cum_bh.iloc[-1] - 1
-        strategy_vol = df["strategy_ret"].std() * np.sqrt(252)
-        strategy_sharpe = df["strategy_ret"].mean() / df["strategy_ret"].std() * np.sqrt(252) if df["strategy_ret"].std() > 0 else 0
-        market_line = ""
-        if market_ret_series is not None:
+        strategy_sharpe = (
+            df["strategy_ret"].mean() / df["strategy_ret"].std() * np.sqrt(252)
+            if df["strategy_ret"].std() > 0 else 0
+        )
+        lines = [f"Strategy Total Return: {strategy_total_ret:.2%}"]
+        if cum_market is not None:
             market_total_ret = cum_market.iloc[-1] - 1
-            market_line = f"\nMarket (QQQ) Total Return: {market_total_ret:.2%}"
-        
-        metrics_text = f"""Strategy Total Return: {strategy_total_ret:.2%}
-Buy & Hold Total Return: {bh_total_ret:.2%}
-Market Return: {market_line}
-Strategy Sharpe: {strategy_sharpe:.3f}"""
-        
-        ax1.text(0.02, 0.98, metrics_text, transform=ax1.transAxes, 
-                 verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-    
+            lines.append(f"Market (QQQ) Total Return: {market_total_ret:.2%}")
+        if include_buy_hold:
+            bh_total_ret = cum_bh.iloc[-1] - 1
+            lines.append(f"Buy & Hold Total Return: {bh_total_ret:.2%}")
+        lines.append(f"Strategy Sharpe: {strategy_sharpe:.3f}")
+
+        ax1.text(
+            0.02, 0.98, "\n".join(lines),
+            transform=ax1.transAxes, va="top",
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.8),
+        )
+
     plt.tight_layout()
     plt.show()
-
 
 # Helper Functions
 # These functions handle the backtesting workflow and basic analysis.
