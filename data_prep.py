@@ -61,7 +61,7 @@ def load_prices(
     if df.empty:
         raise ValueError(f"No data returned for ticker {ticker} with given parameters") #just in case if no data downloaded
 
-    # --- Normalize columns across yfinance variants ---
+    # Normalize columns across yfinance variants 
     if isinstance(df.columns, pd.MultiIndex): #checking if i have multiindex columns
         # 1) If a level contains the ticker, slice that level
         lvl_with_ticker = None
