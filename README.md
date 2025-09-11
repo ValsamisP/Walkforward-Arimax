@@ -66,6 +66,12 @@ Developed by **Panagiotis Valsamis**, M.Sc. in Data Science candidate and aspiri
 **Panagiotis Akidis**, Master in Finance & Economics providing valuable theoretical insights in finance.
 
 
-  
+
+
+
+  ## Disclaimer
+
+This repository is intended **for educational and research purposes only**.  
+It is **not financial advice**, and the models or strategies implemented here should not be used for actual trading or investment decisions. 
 
 
