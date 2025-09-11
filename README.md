@@ -44,10 +44,16 @@ The project is designed with reusable modules for:
 
 <img width="1489" height="990" alt="image" src="https://github.com/user-attachments/assets/70561928-cd26-4760-be1b-1bba86a0dfd6" />
 
+
+
 - Created Heatmaps of all of the three strategies,in where it's visualizing the performance of each strategy in every year and every month.
+  
 <img width="1129" height="790" alt="image" src="https://github.com/user-attachments/assets/93bb8681-e2d6-461e-861b-93d046fcac66" />
 
+
+
 - Designed different visualization of metrics to evaluate the performance of each strategy.
+  
 <img width="1489" height="989" alt="image" src="https://github.com/user-attachments/assets/aa715df5-e612-4eb6-a96b-1b8cde1007b0" />
 
 
